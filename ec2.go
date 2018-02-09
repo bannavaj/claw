@@ -36,6 +36,42 @@ func (client *EC2Handler) GetVpc(vpcID *string) (*ec2.Vpc, error) {
 	return vpcs.Vpcs[0], nil
 }
 
+// GetAllInstances : Get all instances on a stack
+func (client *CFEC2Handler) GetInstances(clusterName *string) (*ec2.DescribeInstancesOutput, error) {
+	tagFilterName := "tag:opsworks:stack"
+	tagFilterValues := make([]*string, 0)
+	tagFilterValues = append(tagFilterValues, clusterName)
+
+	tagStackFilter := &ec2.Filter{
+		Name:   &tagFilterName,
+		Values: tagFilterValues,
+	}
+
+	runningState := "running"
+	runningInstanceFilterName := "instance-state-name"
+	runningInstanceFilterValues := make([]*string, 0)
+	runningInstanceFilterValues = append(runningInstanceFilterValues, &runningState)
+
+	runningStateFilter := &ec2.Filter{
+		Name:   &runningInstanceFilterName,
+		Values: runningInstanceFilterValues,
+	}
+
+	stackFilters := make([]*ec2.Filter, 0)
+	stackFilters = append(stackFilters, tagStackFilter)
+	stackFilters = append(stackFilters, runningStateFilter)
+
+	describeInstancesInput := &ec2.DescribeInstancesInput{}
+	describeInstancesInput.SetFilters(stackFilters)
+
+	instances, err := client.conn.DescribeInstances(describeInstancesInput)
+	if err != nil {
+		return nil, err
+	}
+
+	return instances, nil
+}
+
 // NewEC2Client : Create a new ec2 client
 func NewEC2Client(region string) (*EC2Handler, error) {
 	sess, err := newSession()
