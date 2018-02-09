@@ -12,8 +12,8 @@ type OpsWorksHandler struct {
 
 // GetAllStacks : Get the number of instances on a cluster
 func (client *OpsWorksHandler) GetAllStacks() ([]*opsworks.Stack, error) {
-	stackInput := &opsworks.DescribeStacksInput{}
-	stacks, err := client.conn.DescribeStacks(stackInput)
+	params := &opsworks.DescribeStacksInput{}
+	stacks, err := client.conn.DescribeStacks(params)
 	if err != nil {
 		return nil, err
 	}

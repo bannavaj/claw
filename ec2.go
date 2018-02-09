@@ -12,8 +12,8 @@ type EC2Handler struct {
 
 // GetAllVpcs : Get all vps
 func (client *EC2Handler) GetAllVpcs() ([]*ec2.Vpc, error) {
-	vpcInput := &ec2.DescribeVpcsInput{}
-	vpcs, err := client.conn.DescribeVpcs(vpcInput)
+	params := &ec2.DescribeVpcsInput{}
+	vpcs, err := client.conn.DescribeVpcs(params)
 	if err != nil {
 		return nil, err
 	}
