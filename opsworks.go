@@ -6,8 +6,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/opsworks"
 )
 
-// CFOpsWorksHandler : OpsWorks struct
-type CFOpsWorksHandler struct {
+// OpsWorksHandler : OpsWorks struct
+type OpsWorksHandler struct {
 	conn *opsworks.OpsWorks
 }
 
@@ -20,7 +20,7 @@ type InstanceIDMap struct {
 }
 
 // GetAllStacks : Get the number of instances on a cluster
-func (client *CFOpsWorksHandler) GetAllStacks() ([]*opsworks.Stack, error) {
+func (client *OpsWorksHandler) GetAllStacks() ([]*opsworks.Stack, error) {
 	stackInput := &opsworks.DescribeStacksInput{}
 	stacks, err := client.conn.DescribeStacks(stackInput)
 	if err != nil {
@@ -31,7 +31,7 @@ func (client *CFOpsWorksHandler) GetAllStacks() ([]*opsworks.Stack, error) {
 }
 
 // GetStackSummary : get stack summary
-func (client *CFOpsWorksHandler) GetStackSummary(stackID *string) (*opsworks.DescribeStackSummaryOutput, error) {
+func (client *OpsWorksHandler) GetStackSummary(stackID *string) (*opsworks.DescribeStackSummaryOutput, error) {
 	stackSummaryInput := &opsworks.DescribeStackSummaryInput{
 		StackId: stackID,
 	}
@@ -44,7 +44,7 @@ func (client *CFOpsWorksHandler) GetStackSummary(stackID *string) (*opsworks.Des
 }
 
 // GetStack : Get a stack by id
-func (client *CFOpsWorksHandler) GetStack(stackID *string) (*opsworks.Stack, error) {
+func (client *OpsWorksHandler) GetStack(stackID *string) (*opsworks.Stack, error) {
 	stackInput := &opsworks.DescribeStacksInput{
 		StackIds: []*string{stackID},
 	}
@@ -57,7 +57,7 @@ func (client *CFOpsWorksHandler) GetStack(stackID *string) (*opsworks.Stack, err
 }
 
 // GetStackID : Get the stack id
-func (client *CFOpsWorksHandler) GetStackID(clusterName *string) (string, error) {
+func (client *OpsWorksHandler) GetStackID(clusterName *string) (string, error) {
 	stacks, err := client.GetAllStacks()
 	if err != nil {
 		return "", errors.New("Error getting all stacks")
@@ -73,7 +73,7 @@ func (client *CFOpsWorksHandler) GetStackID(clusterName *string) (string, error)
 }
 
 // GetStackNames : Get all stack names
-func (client *CFOpsWorksHandler) GetStackNames() ([]string, error) {
+func (client *OpsWorksHandler) GetStackNames() ([]string, error) {
 	stacks, err := client.GetAllStacks()
 	if err != nil {
 		return []string{""}, errors.New("Error getting all stacks")
@@ -88,7 +88,7 @@ func (client *CFOpsWorksHandler) GetStackNames() ([]string, error) {
 }
 
 // GetRegionStackNames : Get all stack names in a region
-func (client *CFOpsWorksHandler) GetRegionStackNames(region *string) ([]string, error) {
+func (client *OpsWorksHandler) GetRegionStackNames(region *string) ([]string, error) {
 	stacks, err := client.GetAllStacks()
 	if err != nil {
 		return []string{""}, errors.New("Error getting all stacks")
@@ -105,7 +105,7 @@ func (client *CFOpsWorksHandler) GetRegionStackNames(region *string) ([]string, 
 }
 
 // GetAllApps : Get all apps on a stack
-func (client *CFOpsWorksHandler) GetAllApps(stackID *string) ([]*opsworks.App, error) {
+func (client *OpsWorksHandler) GetAllApps(stackID *string) ([]*opsworks.App, error) {
 	stackIDInput := &opsworks.DescribeAppsInput{
 		StackId: stackID,
 	}
@@ -118,7 +118,7 @@ func (client *CFOpsWorksHandler) GetAllApps(stackID *string) ([]*opsworks.App, e
 }
 
 // GetAppID : Get app id in a stack
-func (client *CFOpsWorksHandler) GetAppID(stackID *string, appName *string) (string, error) {
+func (client *OpsWorksHandler) GetAppID(stackID *string, appName *string) (string, error) {
 	apps, err := client.GetAllApps(stackID)
 	if err != nil {
 		return "", errors.New("Error getting all apps")
@@ -134,7 +134,7 @@ func (client *CFOpsWorksHandler) GetAppID(stackID *string, appName *string) (str
 }
 
 // GetAllLayers : Get all layers in a stack
-func (client *CFOpsWorksHandler) GetAllLayers(stackID *string) ([]*opsworks.Layer, error) {
+func (client *OpsWorksHandler) GetAllLayers(stackID *string) ([]*opsworks.Layer, error) {
 	stackIDInput := &opsworks.DescribeLayersInput{
 		StackId: stackID,
 	}
@@ -147,7 +147,7 @@ func (client *CFOpsWorksHandler) GetAllLayers(stackID *string) ([]*opsworks.Laye
 }
 
 // GetLayerID : Get layer id in a stack
-func (client *CFOpsWorksHandler) GetLayerID(stackID *string, appName *string) (string, error) {
+func (client *OpsWorksHandler) GetLayerID(stackID *string, appName *string) (string, error) {
 	layers, err := client.GetAllLayers(stackID)
 	if err != nil {
 		return "", errors.New("Error getting all layers")
@@ -163,7 +163,7 @@ func (client *CFOpsWorksHandler) GetLayerID(stackID *string, appName *string) (s
 }
 
 // GetAllInstances : Get all instances in a layer
-func (client *CFOpsWorksHandler) GetAllInstances(layerID *string) ([]*opsworks.Instance, error) {
+func (client *OpsWorksHandler) GetAllInstances(layerID *string) ([]*opsworks.Instance, error) {
 	layerIDInput := &opsworks.DescribeInstancesInput{
 		LayerId: layerID,
 	}
@@ -176,7 +176,7 @@ func (client *CFOpsWorksHandler) GetAllInstances(layerID *string) ([]*opsworks.I
 }
 
 // GetInstanceIDs : Get all instance ids in a layer
-func (client *CFOpsWorksHandler) GetInstanceIDs(layerID *string) ([]*InstanceIDMap, error) {
+func (client *OpsWorksHandler) GetInstanceIDs(layerID *string) ([]*InstanceIDMap, error) {
 	instances, err := client.GetAllInstances(layerID)
 	if err != nil {
 		return []*InstanceIDMap{}, errors.New("Error getting all instances")
@@ -198,11 +198,11 @@ func (client *CFOpsWorksHandler) GetInstanceIDs(layerID *string) ([]*InstanceIDM
 }
 
 // NewOpsworksClient : Create a new opsworks client
-func NewOpsworksClient() (*CFOpsWorksHandler, error) {
-	sess, err := NewSession()
+func NewOpsworksClient() (*OpsWorksHandler, error) {
+	sess, err := newSession()
 	if err != nil {
-		return &CFOpsWorksHandler{}, err
+		return &OpsWorksHandler{}, err
 	}
 
-	return &CFOpsWorksHandler{conn: opsworks.New(sess)}, nil
+	return &OpsWorksHandler{conn: opsworks.New(sess)}, nil
 }

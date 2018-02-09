@@ -5,13 +5,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 )
 
-// CFEC2Handler : EC2 struct
-type CFEC2Handler struct {
+// EC2Handler : EC2 struct
+type EC2Handler struct {
 	conn *ec2.EC2
 }
 
 // GetAllVpcs : Get all vps
-func (client *CFEC2Handler) GetAllVpcs() ([]*ec2.Vpc, error) {
+func (client *EC2Handler) GetAllVpcs() ([]*ec2.Vpc, error) {
 	vpcInput := &ec2.DescribeVpcsInput{}
 	vpcs, err := client.conn.DescribeVpcs(vpcInput)
 	if err != nil {
@@ -21,8 +21,8 @@ func (client *CFEC2Handler) GetAllVpcs() ([]*ec2.Vpc, error) {
 	return vpcs.Vpcs, nil
 }
 
-// GetVpc : Get vpc info
-func (client *CFEC2Handler) GetVpc(vpcID *string) (*ec2.Vpc, error) {
+// GetVpc : Get a vpc by vpc-id
+func (client *EC2Handler) GetVpc(vpcID *string) (*ec2.Vpc, error) {
 	dryRun := false
 	vpcInput := &ec2.DescribeVpcsInput{
 		DryRun: &dryRun,
@@ -37,11 +37,11 @@ func (client *CFEC2Handler) GetVpc(vpcID *string) (*ec2.Vpc, error) {
 }
 
 // NewEC2Client : Create a new ec2 client
-func NewEC2Client(region string) (*CFEC2Handler, error) {
-	sess, err := NewSession()
+func NewEC2Client(region string) (*EC2Handler, error) {
+	sess, err := newSession()
 	if err != nil {
 		panic(err)
 	}
 
-	return &CFEC2Handler{conn: ec2.New(sess, aws.NewConfig().WithRegion(region))}, nil
+	return &EC2Handler{conn: ec2.New(sess, aws.NewConfig().WithRegion(region))}, nil
 }

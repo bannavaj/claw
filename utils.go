@@ -7,7 +7,7 @@ import (
 )
 
 // NewSession : Establish a new aws session
-func NewSession() (*session.Session, error) {
+func newSession() (*session.Session, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String("us-east-1"),
 		Credentials: credentials.NewSharedCredentials("", "default"),
