@@ -15,58 +15,57 @@ func (client *EC2Handler) GetAllVpcs() ([]*ec2.Vpc, error) {
 	vpcInput := &ec2.DescribeVpcsInput{}
 	vpcs, err := client.conn.DescribeVpcs(vpcInput)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return vpcs.Vpcs, nil
 }
 
 // GetVpc : Get a vpc by vpc-id
-func (client *EC2Handler) GetVpc(vpcID *string) (*ec2.Vpc, error) {
-	dryRun := false
-	vpcInput := &ec2.DescribeVpcsInput{
-		DryRun: &dryRun,
-		VpcIds: []*string{vpcID},
+func (client *EC2Handler) GetVpc(vpcID string) (*ec2.Vpc, error) {
+	params := &ec2.DescribeVpcsInput{
+		DryRun: aws.Bool(false),
+		VpcIds: []*string{
+			aws.String(vpcID),
+		},
 	}
-	vpcs, err := client.conn.DescribeVpcs(vpcInput)
+	vpcs, err := client.conn.DescribeVpcs(params)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return vpcs.Vpcs[0], nil
 }
 
-// GetInstances : Get all instances on a stack
-func (client *EC2Handler) GetInstances(clusterName *string) (*ec2.DescribeInstancesOutput, error) {
-	tagFilterName := "tag:opsworks:stack"
-	tagFilterValues := make([]*string, 0)
-	tagFilterValues = append(tagFilterValues, clusterName)
-
-	tagStackFilter := &ec2.Filter{
-		Name:   &tagFilterName,
-		Values: tagFilterValues,
+// GetStackInstances : Get all instances on a stack
+func (client *EC2Handler) GetStackInstances(clusterName string) ([]*ec2.Instance, error) {
+	params := &ec2.DescribeInstancesInput{
+		Filters: []*ec2.Filter{
+			&ec2.Filter{
+				Name: aws.String("tag:opsworks:stack"),
+				Values: []*string{
+					aws.String(clusterName),
+				},
+			},
+			&ec2.Filter{
+				Name: aws.String("instance-state-name"),
+				Values: []*string{
+					aws.String("running"),
+				},
+			},
+		},
 	}
 
-	runningState := "running"
-	runningInstanceFilterName := "instance-state-name"
-	runningInstanceFilterValues := make([]*string, 0)
-	runningInstanceFilterValues = append(runningInstanceFilterValues, &runningState)
-
-	runningStateFilter := &ec2.Filter{
-		Name:   &runningInstanceFilterName,
-		Values: runningInstanceFilterValues,
-	}
-
-	stackFilters := make([]*ec2.Filter, 0)
-	stackFilters = append(stackFilters, tagStackFilter)
-	stackFilters = append(stackFilters, runningStateFilter)
-
-	describeInstancesInput := &ec2.DescribeInstancesInput{}
-	describeInstancesInput.SetFilters(stackFilters)
-
-	instances, err := client.conn.DescribeInstances(describeInstancesInput)
+	resp, err := client.conn.DescribeInstances(params)
 	if err != nil {
 		return nil, err
+	}
+
+	var instances []*ec2.Instance
+	for _, reservation := range resp.Reservations {
+		for _, instance := range reservation.Instances {
+			instances = append(instances, instance)
+		}
 	}
 
 	return instances, nil
