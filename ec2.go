@@ -36,8 +36,8 @@ func (client *EC2Handler) GetVpc(vpcID *string) (*ec2.Vpc, error) {
 	return vpcs.Vpcs[0], nil
 }
 
-// GetAllInstances : Get all instances on a stack
-func (client *CFEC2Handler) GetInstances(clusterName *string) (*ec2.DescribeInstancesOutput, error) {
+// GetInstances : Get all instances on a stack
+func (client *EC2Handler) GetInstances(clusterName *string) (*ec2.DescribeInstancesOutput, error) {
 	tagFilterName := "tag:opsworks:stack"
 	tagFilterValues := make([]*string, 0)
 	tagFilterValues = append(tagFilterValues, clusterName)
